@@ -11,8 +11,6 @@ import java.util.Random;
 public class Instr {
     public static int test = Main.test;
     public static int reg_start = 8, reg_end = 25, imm16_max = 65536, imm26_max = 0x4000000;
-    public static ArrayList<Integer> grf = new ArrayList<>();
-    public static ArrayList<Integer> dm = new ArrayList<>();
     public static ArrayList<String> instrList = new ArrayList<>(Arrays.asList("add", "sub", "sw",
             "lw", "ori", "lui"));
     public static ArrayList<String> jumpList = new ArrayList<>(Arrays.asList("beq", "jal", "jr"));
@@ -20,15 +18,6 @@ public class Instr {
     public int rand_rs, rand_rt, rand_rd, rand_imm16, rand_imm26;
     public String instrName;
     public int rs, rt, rd, imm16, imm26;
-
-    public static void initial() {
-        for (int i = 0; i < 32; i++) {
-            grf.add(0);
-        }
-        for (int i = 0; i < 3072; i++) {
-            dm.add(0);
-        }
-    }
 
     public Instr() {
         randInit();
@@ -192,77 +181,13 @@ public class Instr {
         switch (instrName) {
             case "sw":
             case "lw":
-                if (grf.get(rs) < -20480 || grf.get(rs) >= 20480) {
-                    ArrayList<Integer> regNum = new ArrayList<>();
-                    for (int i = reg_start; i <= reg_end; i++) {
-                        regNum.add(i);
-                    }
-                    Collections.shuffle(regNum);
-
-                    int i, flag = 0;
-                    for (i = 0; i < reg_end - reg_start + 1; i++) {
-                        int num = grf.get(regNum.get(i));
-                        if (num >= -20480 && num < 20480) {
-                            flag = 1;
-                            break;
-                        }
-                    }
-                    if (flag == 1) {
-                        rs = regNum.get(i);
-                    } else {
-                        rs = 0;
-                    }
-                }
-
-                int loc = imm16 + grf.get(rs);
-                if (loc % 4 != 0 || loc < 0 || loc >= 12288) {
-                    imm16 = new Random().nextInt(12288) / 4 * 4 - grf.get(rs);
-                }
+                Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
+                imm16 = new Random().nextInt(12288) / 4 * 4 - instr.imm16;
+                Main.instrList.add(instr);
                 break;
         }
     }
 
-
-    public void execute() {
-        switch (instrName) {
-            case "add":
-                grf.set(rd, grf.get(rs) + grf.get(rt));
-                if (test == 1)
-                    System.out.println(rd + " <= " + (grf.get(rs) + grf.get(rt)));
-                break;
-            case "sub":
-                grf.set(rd, grf.get(rs) - grf.get(rt));
-                if (test == 1)
-                    System.out.println(rd + " <= " + (grf.get(rs) - grf.get(rt)));
-                break;
-            case "ori":
-                grf.set(rt, grf.get(rs) | imm16);
-                if (test == 1)
-                    System.out.println(rt + " <= " + (grf.get(rs) | imm16));
-                break;
-            case "lui":
-                grf.set(rt, imm16 << 16);
-                if (test == 1)
-                    System.out.println(rt + " <= " + (imm16 << 16));
-                break;
-            case "sw": {
-                int addr = grf.get(rs) + imm16;
-                dm.set(addr / 4, grf.get(rt));
-                if (test == 1)
-                    System.out.println(addr + " *<= " + grf.get(rt));
-                break;
-            }
-            case "lw": {
-                int addr = grf.get(rs) + imm16;
-                grf.set(rt, dm.get(addr / 4));
-                if (test == 1)
-                    System.out.println(rt + " <= " + dm.get(addr / 4));
-                break;
-            }
-            default:
-                break;
-        }
-    }
 
     public void printInstr() {
         System.out.print(instrName + " ");
