@@ -30,14 +30,21 @@ public class Main {
 
     public static void main(String[] args) {
         Out();
-//        block0(100, 8, 25);
+//
 
         beq_loop(10, 10, 4, 8, 25, "loop1");
         beq_loop(100, 10, 4, 8, 25, "loop2");
-        beq_loop(10, 100, 4, 8, 25, "loop3");
+//        beq_loop(10, 300, 4, 8, 25, "loop3");
+//        for (int i = 0; i < 500; i++) {
+//            instrList.add(new Instr());
+//        }
         for (Instr instr : instrList) {
             instr.printInstr();
         }
+
+        System.out.println("nop\n" + "test_end:\n" +
+                "beq  $0, $0, test_end\n" +
+                "nop"); // 覆盖率测试所要求的固定结尾
     }
 
     public static void beq_loop(int cycles, int numPreCycle, int loop_reg, int reg_start,
@@ -75,4 +82,6 @@ public class Main {
             instrList.add(new Instr(names));
         }
     }
+
+
 }

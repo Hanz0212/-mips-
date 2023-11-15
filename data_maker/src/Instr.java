@@ -8,13 +8,7 @@ import java.util.Random;
 // sw lw offset [-32768, 32768)
 //
 
-public class Instr {
-    public static int test = Main.test;
-    public static int reg_start = 8, reg_end = 25, imm16_max = 65536, imm26_max = 0x4000000;
-    public static ArrayList<String> normList = new ArrayList<>(Arrays.asList("add", "sub", "sw",
-            "lw", "ori", "lui", "nop"));
-    public static ArrayList<String> jumpList = new ArrayList<>(Arrays.asList("beq", "jal", "jr"));
-    public static int label_cnt = 0;
+public class Instr extends Base{
     public String randName;
     public int rand_rs, rand_rt, rand_rd, rand_imm16, rand_imm26;
     public String instrName;
@@ -83,7 +77,7 @@ public class Instr {
     }
 
     public Instr(String name, String alabel) {
-        Main.myAssert(jumpList.contains(name) || name.equals("label"), "jumpList.contains(name)");
+        Main.myAssert(jumpList.contains(name), "jumpList.contains(name)");
         randInit();
         randName = name;
         rand_label = alabel;
@@ -196,13 +190,7 @@ public class Instr {
         rand_label = "";
     }
 
-    public static int fix_regNum(int regNum) {
-        if (regNum < 0 || regNum >= 32) {
-            return new Random().nextInt(32);
-        } else {
-            return regNum;
-        }
-    }
+
 
     public void init() {
         instrName = randName;
@@ -260,23 +248,6 @@ public class Instr {
             case "nop":
                 System.out.println();
         }
-    }
-
-    public static void set_reg_range(int regMin, int regMax) {
-        Main.myAssert(regMin > 1, "regMin > 1");
-        Main.myAssert(regMax <= 31, "regMax <= 31");
-        reg_start = regMin;
-        reg_end = regMax;
-    }
-
-    public static void set_imm16_range(int imm16MAx) {
-        Main.myAssert(imm16MAx <= 65536, "imm16MAx <= 65536");
-        imm16_max = imm16MAx;
-    }
-
-    public static void set_imm26_range(int imm26MAx) {
-        Main.myAssert(imm26MAx <= 0x4000000, "imm26MAx <= 0x4000000");
-        imm26_max = imm26MAx;
     }
 
     public void set_label(String alabel) {
