@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Main {
     public static int test = 0;
@@ -29,12 +30,22 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        Out();
+        Out();
 
-        loop(10, 400, 4, 8, 12, "loop1");
+//        loop(10, 40, 4, 8, 12, "loop1");
+        //jal冲突检测
+//        for(int i=1;i<=10;i++)
+//        {
+//            Jal.block_jal_ct(8,21,i%2==1,"jal"+i);
+//            block0(2, 8, 21);
+//        }
+
+        Jal.block_jal_normal(10,20,8,21,"jal11");
+
         for (Instr instr : instrList) {
             instr.printInstr();
         }
+        //函数
 
 //        System.out.println("nop\n" + "test_end:\n" +
 //                "beq  $0, $0, test_end\n" +
@@ -42,7 +53,7 @@ public class Main {
     }
 
     public static void loop(int cycles, int numPreCycle, int loop_reg, int reg_start,
-                                int reg_end, String alabel, String... anames) {
+                            int reg_end, String alabel, String... anames) {
         Instr.set_reg_range(reg_start, reg_end);
         myAssert(loop_reg < reg_start || loop_reg > reg_end, "dead loop");
 
