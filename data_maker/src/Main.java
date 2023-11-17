@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class Main {
+public class Main extends Base {
     public static int test = 0;
     public static int MAXINSTRNUM = 5000;
     public static ArrayList<Instr> instrList = new ArrayList<>();
@@ -32,46 +32,29 @@ public class Main {
     public static void main(String[] args) {
         Out();
 
-//        loop(10, 40, 4, 8, 12, "loop1");
+        loop_beq.loop(3, 100, 4, 20, 22, "beq_loop1");
         //jal冲突检测
-//        for(int i=1;i<=10;i++)
-//        {
-//            Jal.block_jal_ct(8,21,i%2==1,"jal"+i);
-//            block0(2, 8, 21);
-//        }
+        int LOOP_1_MAX = 50;
+        for (int i = 1; i <= LOOP_1_MAX; i++) {
+            Conflict.jalConflict(8, 21, i % 2 == 1, "jal_conflict" + i);
+            block0(2, 8, 21);
+        }
 
-        Jal.block_jal_normal(10,20,8,21,"jal11");
-
+        Jal.block_jal_normal(50, 50, 8, 21, "jal_normal") ;
+        Conflict.normalConflict(40);
+        for (int i = 1; i <= 50; i++) {
+            Conflict.beqConflict(8, 21, "beqConflict" + i);
+        }
+        Conflict.jrConflict(23);
         for (Instr instr : instrList) {
             instr.printInstr();
         }
+
         //函数
 
 //        System.out.println("nop\n" + "test_end:\n" +
 //                "beq  $0, $0, test_end\n" +
 //                "nop"); // 覆盖率测试所要求的固定结尾
-    }
-
-    public static void loop(int cycles, int numPreCycle, int loop_reg, int reg_start,
-                            int reg_end, String alabel, String... anames) {
-        Instr.set_reg_range(reg_start, reg_end);
-        myAssert(loop_reg < reg_start || loop_reg > reg_end, "dead loop");
-
-        instrList.add(new Instr("ori", loop_reg, 0, 0)); // loop_reg = 0
-        instrList.add(new Instr("label", alabel + "_start")); // start label
-
-        block0(numPreCycle, reg_start, reg_end, anames); // 代码块
-
-        instrList.add(new Instr("ori", 1, 0, 1)); // $1 = 1
-        instrList.add(new Instr("add", loop_reg, loop_reg, 1)); // loop_reg += 1
-        instrList.add(new Instr("ori", 1, 0, cycles)); // $1 = cycles
-        instrList.add(new Instr("beq", 1, loop_reg, alabel + "_end")); // if ($1 == loop_Reg) than end
-        instrList.add(new Instr()); // none jump
-        instrList.add(new Instr("jal", alabel + "_start")); // jal start
-        instrList.add(new Instr()); // none jump
-        instrList.add(new Instr("label", alabel + "_end"));// end label
-
-        return;
     }
 
     public static void block0(int num, int reg_start, int reg_end, String... anames) {
@@ -87,8 +70,6 @@ public class Main {
             instrList.add(new Instr(names));
         }
     }
-
-
 
 
 }

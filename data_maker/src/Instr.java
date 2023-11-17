@@ -6,14 +6,18 @@ import java.util.Random;
 // sw lw offset [-32768, 32768)
 //
 
-public class Instr extends Base{
+public class Instr extends Base {
     public String randName;
-    public int rand_rs, rand_rt, rand_rd, rand_imm16, rand_imm26;
+    public int rand_rs, rand_rt, rand_rd, rand_imm16, rand_imm26, dst;
     public String instrName;
     public int rs, rt, rd, imm16, imm26;
     public ArrayList<String> labelList = new ArrayList<>();
     public String rand_label, label;
     public Instr preinstr;
+
+    public int getDst() {
+        return dst;
+    }
 
     public Instr() {
         randInit();
@@ -191,7 +195,6 @@ public class Instr extends Base{
     }
 
 
-
     public void init() {
         instrName = randName;
         rs = fix_regNum(rand_rs);
@@ -200,10 +203,14 @@ public class Instr extends Base{
         imm16 = fix_imm16(rand_imm16);
         imm26 = rand_imm26;
         label = rand_label;
-
+        findDst();
         switch (instrName) {
             case "sw":
             case "lw":
+                if (rs == 0 && imm16 < 12288 && imm16 >= 0) {
+                    imm16 = imm16 / 4 * 4;
+                    break;
+                }
                 Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
                 preinstr = instr;
                 imm16 = new Random().nextInt(12288) / 4 * 4 - instr.imm16;
@@ -212,6 +219,28 @@ public class Instr extends Base{
         }
     }
 
+    private void findDst() {
+        switch (randName) {
+            case "add":
+            case "sub":
+                dst = rd;
+                break;
+            case "ori":
+            case "lui":
+            case "sw":
+            case "lw":
+                dst = rt;
+                break;
+            case "beq":
+            case "jr":
+                dst = 0;
+                break;
+            case "jal":
+                dst = 31;
+            default:
+                break;
+        }
+    }
 
     public void printInstr() {
         if (instrName.equals("label")) {

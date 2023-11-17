@@ -42,7 +42,7 @@ public class Base {
     }
 
     public static int fix_regNum(int regNum) {
-        if ((regNum < 2|| regNum >= 32) && regNum != 0) {
+        if (regNum < 0 || regNum >= 32) {
             return new Random().nextInt(reg_end - reg_start + 1) + reg_start;
         } else {
             return regNum;
