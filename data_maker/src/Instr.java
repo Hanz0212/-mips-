@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 // dm [0-12288)
@@ -13,7 +15,6 @@ public class Instr extends Base{
     public int rs, rt, rd, imm16, imm26;
     public ArrayList<String> labelList = new ArrayList<>();
     public String rand_label, label;
-    public Instr preinstr;
 
     public Instr() {
         randInit();
@@ -28,7 +29,7 @@ public class Instr extends Base{
     }
 
     public Instr(String name, int n1) {
-        Main.myAssert(normList.contains(name) || name.equals("jr"), "normList.contains(name)");
+        Main.myAssert(normList.contains(name), "normList.contains(name)");
         randInit();
         randName = name;
         setP1(n1);
@@ -187,7 +188,6 @@ public class Instr extends Base{
         rand_imm16 = random.nextInt(imm16_max);
         rand_imm26 = random.nextInt(imm26_max);
         rand_label = "";
-        preinstr = this;
     }
 
 
@@ -197,7 +197,7 @@ public class Instr extends Base{
         rs = fix_regNum(rand_rs);
         rt = fix_regNum(rand_rt);
         rd = fix_regNum(rand_rd);
-        imm16 = fix_imm16(rand_imm16);
+        imm16 = rand_imm16;
         imm26 = rand_imm26;
         label = rand_label;
 
@@ -205,7 +205,6 @@ public class Instr extends Base{
             case "sw":
             case "lw":
                 Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
-                preinstr = instr;
                 imm16 = new Random().nextInt(12288) / 4 * 4 - instr.imm16;
                 Main.instrList.add(instr);
                 break;
@@ -215,7 +214,7 @@ public class Instr extends Base{
 
     public void printInstr() {
         if (instrName.equals("label")) {
-            System.out.println(label + ": " + "nop");
+            System.out.println(label + ": ");
             return;
         }
         for (String label : labelList) {
@@ -252,8 +251,8 @@ public class Instr extends Base{
     }
 
     public void set_label(String alabel) {
-        if (!preinstr.labelList.contains(alabel)) {
-            preinstr.labelList.add(alabel);
+        if (!labelList.contains(alabel)) {
+            labelList.add(alabel);
         }
     }
 }

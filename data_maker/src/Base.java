@@ -42,17 +42,10 @@ public class Base {
     }
 
     public static int fix_regNum(int regNum) {
-        if ((regNum < 2|| regNum >= 32) && regNum != 0) {
-            return new Random().nextInt(reg_end - reg_start + 1) + reg_start;
+        if (regNum < 0 || regNum >= 32) {
+            return new Random().nextInt(32);
         } else {
             return regNum;
-        }
-    }
-    public static int fix_imm16(int imm16) {
-        if (imm16 < 0|| imm16 >= 65536) {
-            return new Random().nextInt(imm16_max);
-        } else {
-            return imm16;
         }
     }
 }
