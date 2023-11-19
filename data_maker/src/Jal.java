@@ -2,6 +2,7 @@ public class Jal extends Main {
     public static void block_jal_normal(int num1, int num2, int reg_start,
                                         int reg_end, String alabel, String... anames) {
         instrList.add(new Instr("jal", alabel + "_start"));
+        instrList.add(new Instr("nop"));
         block0(num1, reg_start, reg_end);
 
         instrList.add(new Instr("jal", alabel + "_end"));

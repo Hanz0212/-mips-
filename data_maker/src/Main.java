@@ -30,22 +30,30 @@ public class Main extends Base {
     }
 
     public static void main(String[] args) {
-        Out();
+//        Out();
 
-        loop_beq.loop(3, 100, 4, 20, 22, "beq_loop1");
+        loop_beq.loop(10, 50, 4, 20, 22, "loop1");
         //jal冲突检测
-        int LOOP_1_MAX = 50;
-        for (int i = 1; i <= LOOP_1_MAX; i++) {
-            Conflict.jalConflict(8, 21, i % 2 == 1, "jal_conflict" + i);
+        set_reg_range(8, 21);
+        for (int i = 1; i <= 30; i++) {
+            Conflict.jalConflict(i % 2, "jal_conflict" + i);
             block0(2, 8, 21);
         }
-
-        Jal.block_jal_normal(50, 50, 8, 21, "jal_normal") ;
-        Conflict.normalConflict(40);
-        for (int i = 1; i <= 50; i++) {
-            Conflict.beqConflict(8, 21, "beqConflict" + i);
+        Conflict.jalConflict(3, "jal_conflict" + 101);
+        Jal.block_jal_normal(10, 20, 8, 21, "jal_normal");
+        Conflict.normalConflict(250);
+        for (int i = 1; i <= 30; i++) {
+            Conflict.beqConflict(8, 21, ((i % 5) == 0), "beqConflict" + i);
         }
-        Conflict.jrConflict(23);
+        Conflict.jrConflict(8, 21, new Random().nextInt(15) + 10, "jrConflict");
+        Conflict.loadConflict(new Random().nextInt(15) + 10);
+
+        Instr instr1 = new Instr("lw");
+        instrList.add(instr1);
+        instrList.add(new Instr("ori", -1, instr1.getDst(), 1314));
+        instrList.add(new Instr("ori", -1, instr1.getDst(), 1314));
+        instrList.add(new Instr("ori", -1, instr1.getDst(), 1314));
+
         for (Instr instr : instrList) {
             instr.printInstr();
         }

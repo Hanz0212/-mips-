@@ -9,6 +9,7 @@ import java.util.Random;
 public class Instr extends Base {
     public String randName;
     public int rand_rs, rand_rt, rand_rd, rand_imm16, rand_imm26, dst;
+    public static boolean special_lw_sw_tag = false;
     public String instrName;
     public int rs, rt, rd, imm16, imm26;
     public ArrayList<String> labelList = new ArrayList<>();
@@ -19,6 +20,9 @@ public class Instr extends Base {
         return dst;
     }
 
+    public static void set_special_lw_sw_tag(boolean tag){
+        special_lw_sw_tag=tag;
+    }
     public Instr() {
         randInit();
         init();
@@ -207,8 +211,13 @@ public class Instr extends Base {
         switch (instrName) {
             case "sw":
             case "lw":
+                if(special_lw_sw_tag) break;
                 if (rs == 0 && imm16 < 12288 && imm16 >= 0) {
                     imm16 = imm16 / 4 * 4;
+                    break;
+                } else if (rs == 31) {
+                    imm16 = new Random().nextInt(50) / 4 * 4;
+                    imm16 -= 0x3000;
                     break;
                 }
                 Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
