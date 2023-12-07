@@ -34,6 +34,7 @@ public class Conflict extends Main {
             int PC = instrList.size() * 4 + 8;
             instrList.add(new Instr("ori", 31, 0, 0x3000 + PC));
             instrList.add(new Instr("jr", 31));
+            instrList.add(new Instr("nop"));
         } else if (type == 1) {
             instrList.add(new Instr(normList, -1, 31));
             //函数体内部
@@ -44,6 +45,8 @@ public class Conflict extends Main {
             int PC = instrList.size() * 4 + 8;
             instrList.add(new Instr("ori", 31, 0, 0x3000 + PC));
             instrList.add(new Instr("jr", 31));
+            instrList.add(new Instr("nop"));
+
         } else {
             instrList.add(new Instr(normList, -1, 31));
             Instr instr = new Instr("beq", 31, 31, alabel + "_end");//函数体第一条指令
@@ -108,6 +111,40 @@ public class Conflict extends Main {
             instrList.add(new Instr("lw", 2, 0, 0));
         }
         instrList.add(new Instr("beq", n1, n2, alabel + "_end"));//即使成立也直接跳转到下一条
+        block0(2, 15, 17);
+        instrList.add(new Instr("label", alabel + "_end"));
+    }
+
+    public static void bneConflict(int reg_start, int reg_end, boolean type, String alabel) {
+        //这时bne产生数据冒险，只可能是成为需求者的时候
+        //构造冲突
+        Instr.set_reg_range(reg_start, reg_end);
+        int n1, n2;
+        if (!type) {
+            Random random = new Random();
+            Instr instr3 = new Instr();//W
+            instrList.add(instr3);
+            Instr instr2 = new Instr();//M
+            instrList.add(instr2);
+            Instr instr1 = new Instr();//E
+            instrList.add(instr1);
+            ArrayList<Integer> dst = new ArrayList<>();
+            dst.add(instr3.getDst());
+            dst.add(instr2.getDst());
+            dst.add(instr1.getDst());
+            int a = random.nextInt(3);
+            n1 = dst.get(a);
+            dst.remove(a);
+            n2 = dst.get(random.nextInt(2));
+        } else {
+            n1 = 2;
+            n2 = 3;
+            instrList.add(new Instr("ori", 2, 0, new Random().nextInt(333333)));
+            instrList.add(new Instr("ori", 3, 0, new Random().nextInt(33333)));
+            instrList.add(new Instr("sw", 3, 0, 0));
+            instrList.add(new Instr("lw", 2, 0, 0));
+        }
+        instrList.add(new Instr("bne", n1, n2, alabel + "_end"));//即使成立也直接跳转到下一条
         block0(2, 15, 17);
         instrList.add(new Instr("label", alabel + "_end"));
     }

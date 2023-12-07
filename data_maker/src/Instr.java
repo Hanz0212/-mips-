@@ -20,9 +20,10 @@ public class Instr extends Base {
         return dst;
     }
 
-    public static void set_special_lw_sw_tag(boolean tag){
-        special_lw_sw_tag=tag;
+    public static void set_special_lw_sw_tag(boolean tag) {
+        special_lw_sw_tag = tag;
     }
+
     public Instr() {
         randInit();
         init();
@@ -130,16 +131,33 @@ public class Instr extends Base {
         switch (randName) {
             case "add":
             case "sub":
+            case "and":
+            case "or":
+            case "slt":
+            case "sltu":
                 rand_rd = n;
                 break;
             case "ori":
             case "lui":
+            case "addi":
+            case "andi":
             case "sw":
+            case "sh":
+            case "sb":
             case "lw":
+            case "lh":
+            case "lb":
                 rand_rt = n;
                 break;
             case "beq":
+            case "bne":
             case "jr":
+            case "mthi":
+            case "mtlo":
+            case "mult":
+            case "multu":
+            case "div":
+            case "divu":
                 rand_rs = n;
                 break;
             case "jal":
@@ -152,13 +170,28 @@ public class Instr extends Base {
     public void setP2(int n) {
         switch (randName) {
             case "beq":
+            case "bne":
+            case "mult":
+            case "multu":
+            case "div":
+            case "divu":
                 rand_rt = n;
                 break;
             case "add":
             case "sub":
+            case "and":
+            case "or":
+            case "slt":
+            case "sltu":
             case "ori":
+            case "addi":
+            case "andi":
             case "sw":
+            case "sh":
+            case "sb":
             case "lw":
+            case "lh":
+            case "lb":
                 rand_rs = n;
                 break;
             case "lui":
@@ -172,12 +205,23 @@ public class Instr extends Base {
         switch (randName) {
             case "add":
             case "sub":
+            case "and":
+            case "or":
+            case "slt":
+            case "sltu":
                 rand_rt = n;
                 break;
             case "ori":
+            case "addi":
+            case "andi":
             case "sw":
+            case "sh":
+            case "sb":
             case "lw":
+            case "lh":
+            case "lb":
             case "beq":
+            case "bne":
                 rand_imm16 = n;
                 break;
             default:
@@ -210,9 +254,9 @@ public class Instr extends Base {
         findDst();
         switch (instrName) {
             case "sw":
-            case "lw":
-                if(special_lw_sw_tag) break;
-                if (rs == 0 && imm16 < 12288 && imm16 >= 0) {
+            case "lw": {
+                if (special_lw_sw_tag) break;
+                if (rs == 0 && imm16 < 12284 && imm16 >= 0) {
                     imm16 = imm16 / 4 * 4;
                     break;
                 } else if (rs == 31) {
@@ -222,8 +266,63 @@ public class Instr extends Base {
                 }
                 Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
                 preinstr = instr;
-                imm16 = new Random().nextInt(12288) / 4 * 4 - instr.imm16;
+                imm16 = new Random().nextInt(12284) / 4 * 4 - instr.imm16;
+                if (rs == 0) {
+                    imm16 = new Random().nextInt(12284) / 4 * 4;
+                }
                 Main.instrList.add(instr);
+                break;
+            }
+            case "sh":
+            case "lh": {
+                if (special_lw_sw_tag) break;
+                if (rs == 0 && imm16 < 12284 && imm16 >= 0) {
+                    imm16 = imm16 / 2 * 2;
+                    break;
+                } else if (rs == 31) {
+                    imm16 = new Random().nextInt(50) / 2 * 2;
+                    imm16 -= 0x3000;
+                    break;
+                }
+                Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
+                preinstr = instr;
+                imm16 = new Random().nextInt(12284) / 2 * 2 - instr.imm16;
+                if (rs == 0) {
+                    imm16 = new Random().nextInt(12284) / 2 * 2;
+                }
+                Main.instrList.add(instr);
+                break;
+            }
+            case "lb":
+            case "sb": {
+                if (special_lw_sw_tag) break;
+                if (rs == 0 && imm16 < 12284 && imm16 >= 0) {
+                    imm16 = imm16;
+                    break;
+                } else if (rs == 31) {
+                    imm16 = new Random().nextInt(50);
+                    imm16 -= 0x3000;
+                    break;
+                }
+                Instr instr = new Instr("ori", rs, 0, new Random().nextInt(32768));
+                preinstr = instr;
+                imm16 = new Random().nextInt(12284) - instr.imm16;
+                if (rs == 0) {
+                    imm16 = new Random().nextInt(12284);
+                }
+                Main.instrList.add(instr);
+                break;
+            }
+            case "addi":
+                imm16 = fix2_imm16(imm16);
+                break;
+            case "div":
+            case "divu":
+                if (rt == 0) {
+                    rt = new Random().nextInt(reg_end - reg_start) + reg_start + 1;
+                }
+//                Instr instr = new Instr("ori", rt, 0, new Random().nextInt(32767) + 1);
+                Main.instrList.add(new Instr("ori", rt, rt, 1));
                 break;
         }
     }
@@ -232,15 +331,28 @@ public class Instr extends Base {
         switch (randName) {
             case "add":
             case "sub":
+            case "and":
+            case "or":
+            case "slt":
+            case "sltu":
+            case "mfhi":
+            case "mflo":
                 dst = rd;
                 break;
             case "ori":
+            case "addi":
+            case "andi":
             case "lui":
             case "sw":
+            case "sh":
+            case "sb":
             case "lw":
+            case "lh":
+            case "lb":
                 dst = rt;
                 break;
             case "beq":
+            case "bne":
             case "jr":
                 dst = 0;
                 break;
@@ -263,23 +375,46 @@ public class Instr extends Base {
         switch (instrName) {
             case "add":
             case "sub":
+            case "and":
+            case "or":
+            case "slt":
+            case "sltu":
                 System.out.println("$" + rd + " $" + rs + " $" + rt);
                 break;
             case "ori":
+            case "addi":
+            case "andi":
                 System.out.println("$" + rt + " $" + rs + " " + imm16);
                 break;
             case "lui":
                 System.out.println("$" + rt + " " + imm16);
                 break;
             case "sw":
+            case "sh":
+            case "sb":
             case "lw":
+            case "lh":
+            case "lb":
                 System.out.println("$" + rt + " " + imm16 + "($" + rs + ")");
                 break;
             case "beq":
+            case "bne":
                 System.out.println("$" + rs + " $" + rt + " " + label);
                 break;
+            case "mult":
+            case "multu":
+            case "div":
+            case "divu":
+                System.out.println("$" + rs + " $" + rt);
+                break;
             case "jr":
+            case "mthi":
+            case "mtlo":
                 System.out.println("$" + rs);
+                break;
+            case "mfhi":
+            case "mflo":
+                System.out.println("$" + rd);
                 break;
             case "jal":
                 System.out.println(label);

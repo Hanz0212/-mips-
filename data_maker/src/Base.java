@@ -5,10 +5,11 @@ import java.util.Random;
 public class Base {
     public static int test = Main.test;
     public static int reg_start = 8, reg_end = 25, imm16_max = 65536, imm26_max = 0x4000000;
-    public static ArrayList<String> normList = new ArrayList<>(Arrays.asList("add", "sub", "sw",
-            "lw", "ori", "lui", "nop"));
-    public static ArrayList<String> jumpList = new ArrayList<>(Arrays.asList("beq", "jal", "jr",
-            "label"));
+    public static ArrayList<String> normList = new ArrayList<>(Arrays.asList("add", "sub", "and",
+            "or", "slt", "sltu", "mult", "multu", "div", "divu", "sw", "sh", "sb", "lh", "lb",
+            "lw", "ori", "lui", "andi", "addi", "mfhi", "mflo", "mthi", "mtlo", "nop"));
+    public static ArrayList<String> jumpList = new ArrayList<>(Arrays.asList("beq", "bne", "jal",
+            "jr", "label"));
 
     public static ArrayList<String> cal_rr = new ArrayList<>(Arrays.asList("add", "sub"));
     public static ArrayList<String> cal_ri = new ArrayList<>(Arrays.asList("ori"));
@@ -25,7 +26,7 @@ public class Base {
     public static ArrayList<String> jr = new ArrayList<>(Arrays.asList("jr"));
 
     public static void set_reg_range(int regMin, int regMax) {
-        Main.myAssert(regMin > 1, "regMin > 1");
+        Main.myAssert(regMin >= 0, "regMin >= 0");
         Main.myAssert(regMax <= 31, "regMax <= 31");
         reg_start = regMin;
         reg_end = regMax;
@@ -51,6 +52,13 @@ public class Base {
     public static int fix_imm16(int imm16) {
         if (imm16 < 0|| imm16 >= 65536) {
             return new Random().nextInt(imm16_max);
+        } else {
+            return imm16;
+        }
+    }
+    public static int fix2_imm16(int imm16) {
+        if (imm16 < -32768|| imm16 >= 32768) {
+            return new Random().nextInt(imm16_max) - 32768;
         } else {
             return imm16;
         }
