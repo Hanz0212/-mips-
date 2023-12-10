@@ -8,6 +8,10 @@ public class Base {
     public static ArrayList<String> normList = new ArrayList<>(Arrays.asList("add", "sub", "and",
             "or", "slt", "sltu", "mult", "multu", "div", "divu", "sw", "sh", "sb", "lh", "lb",
             "lw", "ori", "lui", "andi", "addi", "mfhi", "mflo", "mthi", "mtlo", "nop"));
+    public static ArrayList<String> exception = new ArrayList<>(Arrays.asList("syscall", "addu $0 $0 $0",
+            "subu $0 $0 $0", "lbu $0 $0 0", "lhu $0 0 $0", "sll $t1 $t2 10", "srl $t1 $t2 10",
+            "sra $t1 $t2 10", "xor $t1 $t2 $t3", "nor $t1 $t2 $t3", "blez $t1 -1", "bgtz $t1 -1",
+            "bgez $t1 -1", "jalr $t1 $t2", "sllv $t1 $t2 $t3", "srlv $t1 $t2 $t3", "srav $t1 $t2 $t3"));
     public static ArrayList<String> jumpList = new ArrayList<>(Arrays.asList("beq", "bne", "jal",
             "jr", "label"));
 

@@ -387,7 +387,7 @@ public class Instr extends Base {
                 System.out.println("$" + rt + " $" + rs + " " + imm16);
                 break;
             case "lui":
-                System.out.println("$" + rt + " " + imm16);
+                System.out.println("$" + rt + " 0x" + Integer.toHexString(imm16));
                 break;
             case "sw":
             case "sh":
@@ -421,6 +421,9 @@ public class Instr extends Base {
                 break;
             case "nop":
                 System.out.println();
+                break;
+            default:
+//                System.out.println();
         }
     }
 
